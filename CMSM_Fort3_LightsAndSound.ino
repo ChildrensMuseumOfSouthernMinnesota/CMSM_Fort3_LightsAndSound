@@ -20,8 +20,12 @@ void loop() {
 
 float readSensorIn() {
   // estimated from https://www.exploringarduino.com/wp-content/uploads/2013/06/GP2Y0A-datasheet.pdf page 5
-  int raw = analogRead(SENSEPIN);
-  float invDistCM = map(raw, 266, 634, 0.05, 0.15);
+  int numSamples = 10;
+  int sumSamples = 0;
+  for (int i = 0; i < 10; i++) {
+    sumSamples += analogRead(SENSEPIN);
+  }
+  float invDistCM = map(sumSamples/numSamples, 266, 634, 0.05, 0.15);
   return 2.54/(invDistCM);
 }
 
