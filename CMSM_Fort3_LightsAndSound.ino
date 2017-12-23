@@ -24,6 +24,7 @@ float readSensorIn() {
   int sumSamples = 0;
   for (int i = 0; i < 10; i++) {
     sumSamples += analogRead(SENSEPIN);
+    delay(5);
   }
   float invDistCM = map(sumSamples/numSamples, 266, 634, 0.05, 0.15);
   return 2.54/(invDistCM);
