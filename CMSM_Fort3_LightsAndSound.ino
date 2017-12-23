@@ -1,24 +1,29 @@
-#define SENSEPIN A0
+#define SENSEPIN A3
 #define SOUNDTRIGPIN 10
-#define LIGHTCTRLPIN 9
-#define SPACINGTIME_SEC 60
-#define LIGHTFADETIME_MS 500
+#define LIGHTCTRLPIN 3
+#define SPACINGTIME_SEC 30
+#define LIGHTFADETIME_MS 1000
 
 void setup() {
   pinMode(SOUNDTRIGPIN, OUTPUT);
   pinMode(LIGHTCTRLPIN, OUTPUT);
+  Serial.begin(9600);
+  digitalWrite(SOUNDTRIGPIN, HIGH);
 }
 
 void loop() {
-  if (readSensorIn() < 30) {
+  Serial.println(readSensorIn());
+  if (readSensorIn() < 30 && readSensorIn() > 0) {
     rampLights();
     triggerSound();
+    delay(10000);
     dimLights();
+    delay(SPACINGTIME_SEC*1000L);
   }
-  delay(SPACINGTIME_SEC*1000L);
+  delay(10);
 }
 
-float readSensorIn() {
+int readSensorIn() {
   // estimated from https://www.exploringarduino.com/wp-content/uploads/2013/06/GP2Y0A-datasheet.pdf page 5
   int numSamples = 10;
   int sumSamples = 0;
@@ -26,8 +31,8 @@ float readSensorIn() {
     sumSamples += analogRead(SENSEPIN);
     delay(5);
   }
-  float invDistCM = map(sumSamples/numSamples, 266, 634, 0.05, 0.15);
-  return 2.54/(invDistCM);
+  float invDist = map(sumSamples/numSamples, 266, 634, 50, 150);
+  return 254.0/(invDist);
 }
 
 void rampLights() {
@@ -47,8 +52,8 @@ void dimLights() {
 }
 
 void triggerSound() {
-  digitalWrite(SOUNDTRIGPIN, HIGH);
-  delay(10);
   digitalWrite(SOUNDTRIGPIN, LOW);
+  delay(10);
+  digitalWrite(SOUNDTRIGPIN, HIGH);
 }
 
