@@ -1,8 +1,9 @@
-#define SENSEPIN A3
+#define SENSEPIN A4
 #define SOUNDTRIGPIN 10
 #define LIGHTCTRLPIN 3
 #define SPACINGTIME_SEC 30
-#define LIGHTFADETIME_MS 1000
+#define LIGHTFADETIME_MS 5000L
+#define LIGHTONTIME_SEC 60
 
 void setup() {
   pinMode(SOUNDTRIGPIN, OUTPUT);
@@ -16,7 +17,7 @@ void loop() {
   if (readSensorIn() < 30 && readSensorIn() > 0) {
     rampLights();
     triggerSound();
-    delay(10000);
+    delay(LIGHTONTIME_SEC*1000L);
     dimLights();
     delay(SPACINGTIME_SEC*1000L);
   }
@@ -25,9 +26,9 @@ void loop() {
 
 int readSensorIn() {
   // estimated from https://www.exploringarduino.com/wp-content/uploads/2013/06/GP2Y0A-datasheet.pdf page 5
-  int numSamples = 10;
+  int numSamples = 20;
   int sumSamples = 0;
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < numSamples; i++) {
     sumSamples += analogRead(SENSEPIN);
     delay(5);
   }
@@ -36,18 +37,18 @@ int readSensorIn() {
 }
 
 void rampLights() {
-  int usPerStep = LIGHTFADETIME_MS*1000L/255;
+  long usPerStep = LIGHTFADETIME_MS/255L;
   for (int i = 0; i <= 255; i++) {
     analogWrite(LIGHTCTRLPIN, i);
-    delayMicroseconds(usPerStep);
+    delay(usPerStep);
   }
 }
 
 void dimLights() {
-  int usPerStep = LIGHTFADETIME_MS*1000L/255;
+  long usPerStep = LIGHTFADETIME_MS/255L;
   for (int i = 255; i >= 0; i--) {
     analogWrite(LIGHTCTRLPIN, i);
-    delayMicroseconds(usPerStep);
+    delay(usPerStep);
   }
 }
 
